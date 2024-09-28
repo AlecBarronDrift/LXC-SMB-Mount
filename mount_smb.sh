@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Use command-line prompts to gather user input
-read -p "Enter the SMB server IP or hostname (e.g., 192.168.1.105): " SMB_SERVER_IP
-read -p "Enter the SMB share name (e.g., WOKHOME): " SMB_SHARE
+read -p "Enter the SMB server IP or hostname (e.g., 192.168.1.100): " SMB_SERVER_IP
+read -p "Enter the SMB share name (e.g., ShareName): " SMB_SHARE
 read -p "Enter the mount point path (default: /mnt/smbshare): " MOUNT_POINT
 read -p "Enter the username to access the SMB share (default: root): " SMB_USERNAME
 read -s -p "Enter the password for the SMB share: " SMB_PASSWORD
