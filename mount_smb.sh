@@ -18,7 +18,8 @@ SMB_USERNAME=${SMB_USERNAME:-root}
 
 # Set the credentials file and mount unit paths
 CREDENTIALS_FILE="/etc/smb-credentials"
-UNIT_FILE="/etc/systemd/system/$(echo $MOUNT_POINT | sed 's/\//-/g').mount"
+ESCAPED_MOUNT_POINT=$(systemd-escape --path "$MOUNT_POINT")
+UNIT_FILE="/etc/systemd/system/$ESCAPED_MOUNT_POINT.mount"
 
 # Step 1: Install CIFS utils
 echo "Installing cifs-utils..."
@@ -26,7 +27,7 @@ sudo apt update && sudo apt install -y cifs-utils
 
 # Step 2: Create mount point
 echo "Creating mount point at $MOUNT_POINT..."
-sudo mkdir -p $MOUNT_POINT
+sudo mkdir -p "$MOUNT_POINT"
 
 # Step 3: Create credentials file
 echo "Creating credentials file at $CREDENTIALS_FILE..."
@@ -36,7 +37,7 @@ password=$SMB_PASSWORD
 EOL"
 
 # Secure the credentials file
-sudo chmod 600 $CREDENTIALS_FILE
+sudo chmod 600 "$CREDENTIALS_FILE"
 
 # Step 4: Create systemd mount unit
 echo "Creating systemd mount unit at $UNIT_FILE..."
@@ -59,12 +60,7 @@ EOL"
 # Step 5: Enable and start systemd service
 echo "Reloading systemd daemon and starting mount unit..."
 sudo systemctl daemon-reload
-sudo systemctl enable $(echo $MOUNT_POINT | sed 's/\//-/g').mount
-sudo systemctl start $(echo $MOUNT_POINT | sed 's/\//-/g').mount
-
-# Step 6: Enable systemd-networkd-wait-online for network readiness
-echo "Enabling systemd-networkd-wait-online.service..."
-sudo systemctl enable systemd-networkd-wait-online.service
-sudo systemctl start systemd-networkd-wait-online.service
+sudo systemctl enable "$ESCAPED_MOUNT_POINT.mount"
+sudo systemctl start "$ESCAPED_MOUNT_POINT.mount"
 
 echo "SMB share mounted and set to persist after reboot."
